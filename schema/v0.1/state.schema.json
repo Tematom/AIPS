@@ -1,0 +1,16 @@
+{
+  "$id": "https://aips.tematom.com/schema/v0.1/state.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["aips","type","ts","data"],
+  "properties": {
+    "aips": { "const": "0.1" },
+    "type": { "const": "state" },
+    "id": { "type": "string" },
+    "ts": { "type": "string", "format": "date-time" },
+    "stream": { "type": "string" },
+    "subject": { "type": "string" },
+    "data": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": true
+}
