@@ -1,0 +1,1 @@
+{ "aips":"0.1","type":"command","ts":"2025-10-31T17:13:00Z","stream":"brew.kettle","target":"actuator:fan-1","ttl":"30s","data":{"action":"set","value":"on","safety":"confirm"} }
