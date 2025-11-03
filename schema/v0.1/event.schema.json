@@ -1,0 +1,27 @@
+{
+  "$id": "https://aips.tematom.com/schema/v0.1/event.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["aips","type","ts","data"],
+  "properties": {
+    "aips": { "const": "0.1" },
+    "type": { "const": "event" },
+    "id": { "type": "string" },
+    "ts": { "type": "string", "format": "date-time" },
+    "stream": { "type": "string" },
+    "subject": { "type": "string" },
+    "data": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "value": { "type": "number" },
+        "unit": { "type": "string" },
+        "threshold": { "type": "number" }
+      },
+      "additionalProperties": true
+    },
+    "quality": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": true
+}
