@@ -1,0 +1,26 @@
+{
+  "$id": "https://aips.tematom.com/schema/v0.1/report.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["aips","type","ts","data","window"],
+  "properties": {
+    "aips": { "const": "0.1" },
+    "type": { "const": "report" },
+    "id": { "type": "string" },
+    "ts": { "type": "string", "format": "date-time" },
+    "stream": { "type": "string" },
+    "subject": { "type": "string" },
+    "window": {
+      "type": "object",
+      "properties": {
+        "since": { "type": "string", "format": "date-time" },
+        "until": { "type": "string", "format": "date-time" }
+      },
+      "required": ["since","until"],
+      "additionalProperties": true
+    },
+    "data": { "type": "object", "additionalProperties": true },
+    "quality": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": true
+}
