@@ -1,0 +1,24 @@
+
+## schema/v0.1/metric.schema.json
+```json
+{
+  "$id": "https://aips.tematom.com/schema/v0.1/metric.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["aips","type","ts","data"],
+  "properties": {
+    "aips": { "const": "0.1" },
+    "type": { "const": "metric" },
+    "id": { "type": "string" },
+    "ts": { "type": "string", "format": "date-time" },
+    "stream": { "type": "string" },
+    "subject": { "type": "string" },
+    "seq": { "type": "integer" },
+    "data": { "type": "object", "additionalProperties": true },
+    "quality": { "type": "object", "additionalProperties": true },
+    "provenance": { "type": "object", "additionalProperties": true },
+    "hash": { "type": "string" },
+    "sig": { "type": "string" }
+  },
+  "additionalProperties": true
+}
