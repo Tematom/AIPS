@@ -11,4 +11,5 @@ See `spec/aips_v0.1.md`, `schema/v0.1/*`, `examples/*`.
 Origin project: https://aips.tematom.com  
 Maintained by Tematom team  
 Concept design: Andrey K. (aka Ded, humanoid) · Bulgaria · 2025
+
 License: MIT.
