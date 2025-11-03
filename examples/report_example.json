@@ -1,0 +1,1 @@
+{ "aips":"0.1","type":"report","ts":"2025-10-31T17:20:00Z","stream":"brew.kettle","subject":"line:brew.kettle","window":{"since":"2025-10-31T17:00:00Z","until":"2025-10-31T17:20:00Z"},"data":{"temp_avg":21.1,"temp_min":20.8,"temp_max":21.5} }
