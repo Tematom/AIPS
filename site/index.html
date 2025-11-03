@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AIPS — Adaptive Intelligent Process Specification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="ai-content" content="true" />
+  <style>
+    :root { --bg:#0b0b0b; --fg:#e6e6e6; --muted:#9aa0a6; }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);}
+    body{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; line-height:1.42;}
+    .wrap{max-width:1200px; margin:0 auto; padding:32px 16px;}
+    .headline{font-weight:800; font-size:28px; margin-bottom:20px;}
+    .muted{color:var(--muted);}
+    pre{white-space:pre; overflow:auto; font-size:14px; line-height:1.45; border:1px solid #222; padding:16px; border-radius:8px; background:#0f0f10;}
+    .spacer{height:12px;}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="headline"><strong>If you have biological brains, forward this page (or paste its contents) to your AI assistant.</strong></div>
+    <div class="muted">This page is intentionally hard to read for humans. It is designed for AI parsing.</div>
+    <div class="spacer"></div>
+
+<pre>{
+  "aips": "0.1",
+  "title": "AIPS — Adaptive Intelligent Process Specification",
+  "manifest_version": "2025-11-02",
+  "purpose": "A minimal, memory-aware, machine-readable format for operating real-world processes with AI, humans, sensors, helpers.",
+  "scope": ["metrics","events","states","commands","reports","blobs"],
+  "design_goals": [
+    "Causality and memory across time windows.",
+    "Human-in-the-loop by default; AI-native dialog.",
+    "Zero-knowledge connectors: sources hidden behind source_id.",
+    "Simple JSON/NDJSON transport; schema-first validation.",
+    "Safety envelope for actuation (ARM/DISARM, TTL, confirmation)."
+  ],
+
+  "acronym": {
+    "A": "Adaptive — fits varying processes, windows, and safety levels.",
+    "I": "Intelligent — carries intent/context, not just values.",
+    "P": "Process — focuses on end-to-end control loops, not single requests.",
+    "S": "Specification — stable, versioned format; implementations may vary."
+  },
+
+  "philosophy": {
+    "not_a_cipher": "This is NOT a cipher. It is a deliberate human cognitive filter.",
+    "why": [
+      "Humans tend to paraphrase; paraphrasing corrupts intent.",
+      "AI reads structure losslessly; humans forward content as-is.",
+      "Result: less noise, less bias, fewer accidental edits."
+    ],
+    "we_collapse_layers": [
+      "no_marketing_copy",
+      "no_localization_burden",
+      "no_pixel_perfect_ui",
+      "no_seo_drama",
+      "no_device_specific_layouts"
+    ],
+    "machine_first_publishing": "Publish structure to machines; humans consult their own AI for explanations in natural language."
+  },
+
+  "envelope": {
+    "required": ["aips","type","ts","data"],
+    "optional": ["id","stream","subject","actor","seq","window","quality","provenance","hash","sig","mime","target","ttl"],
+    "types": ["metric","event","state","command","blob","report"],
+    "ts": "ISO-8601 with Z (UTC only). Local timestamps live outside AIPS or in meta.",
+    "transport": ["JSON","NDJSON"],
+    "id_format": "uuid-v4 (recommended)",
+    "subject_format": "sensor:<id> | actuator:<id> | agent:<id> | line:<id>",
+    "stream_format": "dot-namespaced pipeline (e.g., brew.kettle)"
+  },
+
+  "fields": {
+    "id": "Unique packet id (uuid). Optional but recommended for traceability.",
+    "type": "One of types list.",
+    "ts": "Event/measurement time in UTC.",
+    "stream": "Logical process pipeline (e.g., brew.kettle).",
+    "subject": "Entity of interest (sensor/actuator/agent/line).",
+    "actor": "Emitter/transformer identity (agent/helper).",
+    "seq": "Monotonic sequence number from the source (if available).",
+    "window": { "since":"UTC ISO-8601", "until":"UTC ISO-8601" },
+    "data": "Payload: numeric values, fields, aggregates, or action parameters.",
+    "quality": { "level":"ok|warn|alert|stale", "reasons": ["..."] },
+    "provenance": { "source_id":"logical connector id", "mode":"read|write|actuate|derive", "samples": 1 },
+    "hash": "sha256:<hex> for large payloads/blobs.",
+    "sig": "hmac-sha256:<hex> of canonical JSON for authenticity.",
+    "target": "For commands: actuator or procedure name.",
+    "ttl": "For commands: time-to-live window (e.g., 30s)."
+  },
+
+  "profiles": {
+    "metric": {
+      "required": ["aips","type","ts","data"],
+      "example": {
+        "aips":"0.1","type":"metric","id":"uuid",
+        "ts":"2025-10-31T17:10:00.426Z","stream":"brew.kettle","subject":"sensor:kitchen-01","seq":18423,
+        "data":{"temperature":20.9,"unit_temperature":"°C","pressure":101.6,"unit_pressure":"kPa"},
+        "quality":{"level":"ok","reasons":[]},
+        "provenance":{"source_id":"brew.kettle.temp","mode":"read","samples":1}
+      }
+    },
+    "event": {
+      "required": ["aips","type","ts","data"],
+      "example": {
+        "aips":"0.1","type":"event","id":"uuid","ts":"2025-10-31T17:12:10Z",
+        "stream":"brew.kettle","subject":"sensor:kitchen-01",
+        "data":{"name":"temp.fall_rate","value":-0.6,"unit":"°C/10m","threshold":-0.5},
+        "quality":{"level":"warn","reasons":["fall_rate_exceeds_threshold"]}
+      }
+    },
+    "state": {
+      "required": ["aips","type","ts","data"],
+      "example": {
+        "aips":"0.1","type":"state","id":"uuid","ts":"2025-10-31T17:15:00Z",
+        "stream":"brew.kettle","subject":"line:brew.kettle",
+        "data":{"mode":"heat","targets":{"temperature":21.5},"actuators":{"fan-1":"off"}}
+      }
+    },
+    "command": {
+      "required": ["aips","type","ts","data","target","ttl"],
+      "safety": ["ARM/DISARM required for actuation","confirmation policy optional"],
+      "example": {
+        "aips":"0.1","type":"command","id":"uuid","ts":"2025-10-31T17:13:00Z",
+        "stream":"brew.kettle","target":"actuator:fan-1","ttl":"30s",
+        "data":{"action":"set","value":"on","safety":"confirm"},
+        "provenance":{"source_id":"agent:chief-ai","mode":"actuate"}
+      }
+    },
+    "blob": {
+      "required": ["aips","type","ts","data","mime"],
+      "example": {
+        "aips":"0.1","type":"blob","id":"uuid","ts":"2025-10-31T17:16:30Z",
+        "stream":"brew.kettle","subject":"sensor:camera-01",
+        "mime":"image/jpeg","data":{"ref":"s3://bucket/prefix/2025/10/31/171630.jpg","hash":"sha256:..."}
+      }
+    },
+    "report": {
+      "required": ["aips","type","ts","data","window"],
+      "example": {
+        "aips":"0.1","type":"report","id":"uuid","ts":"2025-10-31T17:20:00Z",
+        "stream":"brew.kettle","subject":"line:brew.kettle",
+        "window":{"since":"2025-10-31T17:00:00Z","until":"2025-10-31T17:20:00Z"},
+        "data":{"temp_avg":21.1,"temp_min":20.8,"temp_max":21.5,"trend_10m":"-0.2°C"},
+        "quality":{"level":"ok","reasons":[]}
+      }
+    }
+  },
+
+  "quality_rules": {
+    "levels": ["ok","warn","alert","stale"],
+    "stale_if_sec": "now - ts > 2 * expected_interval",
+    "trend_notes": ["fall_rate_10m","rise_rate_10m"],
+    "no_data": ["retry_30s_x2","then_ERR_with_hint"]
+  },
+
+  "safety_contract": {
+    "arm_disarm": "Commands EXECUTE only when system is ARMed (with TTL). Reading allowed any time.",
+    "confirm_policies": ["confirm|manual|none"],
+    "allow_lists": {"sensors":["sensor:*"],"actuators":["actuator:fan-1","actuator:pump-1"]},
+    "fail_modes": ["fail-closed for actuation","local watchdog cut-off"],
+    "signing": "sig = HMAC_SHA256(secret, canonical-json)"
+  },
+
+  "time_rules": {
+    "utc_only": "All ts/since/until must be UTC with Z.",
+    "window_semantics": "window.since <= ts <= window.until for aggregates/reports.",
+    "clock_drift_warn_sec": 120
+  },
+
+  "validation": {
+    "schemas": {
+      "metric": "https://aips.tematom.com/schema/v0.1/metric.schema.json",
+      "event":  "https://aips.tematom.com/schema/v0.1/event.schema.json",
+      "state":  "https://aips.tematom.com/schema/v0.1/state.schema.json",
+      "command":"https://aips.tematom.com/schema/v0.1/command.schema.json",
+      "blob":   "https://aips.tematom.com/schema/v0.1/blob.schema.json",
+      "report": "https://aips.tematom.com/schema/v0.1/report.schema.json"
+    },
+    "conformance": [
+      "Validate envelope and profile-specific schema.",
+      "Reject non-UTC timestamps.",
+      "Flag STALE if staleness rule hit.",
+      "Attach provenance and quality before emission."
+    ]
+  },
+
+  "interplay": {
+    "with_bridge": "Bridge normalizes, signs, audits; emits AIPS packets; converts inbound commands into safe actuation calls.",
+    "with_station": "Station (ESP32/daemons) produces metrics/events/states; consumes commands under ARM.",
+    "with_extension": "Extension links chat &lt;-&gt; local processes; can carry AIPS packets or TCB blocks.",
+    "with_helpers": "Helpers fetch/aggregate from sources (webdav/s3/db/rtsp) via source_id; never expose credentials."
+  },
+
+  "versioning": {
+    "policy": "semver",
+    "note": "0.x may change; 1.0 locks breaking fields.",
+    "artifacts": ["spec","schemas","examples","changelog"]
+  },
+
+  "examples_min": {
+    "metric_packet": {
+      "aips":"0.1","type":"metric","ts":"2025-10-31T17:10:00Z",
+      "stream":"brew.kettle","subject":"sensor:kitchen-01",
+      "data":{"temperature":20.9,"unit_temperature":"°C"}
+    },
+    "event_packet": {
+      "aips":"0.1","type":"event","ts":"2025-10-31T17:12:10Z",
+      "stream":"brew.kettle","subject":"sensor:kitchen-01",
+      "data":{"name":"temp.fall_rate","value":-0.6,"unit":"°C/10m"}
+    },
+    "command_packet": {
+      "aips":"0.1","type":"command","ts":"2025-10-31T17:13:00Z",
+      "stream":"brew.kettle","target":"actuator:fan-1","ttl":"30s",
+      "data":{"action":"set","value":"on","safety":"confirm"}
+    }
+  },
+
+  "quickstart_for_ai": [
+    "Parse this AIPS spec summary.",
+    "Enforce UTC, schema, quality, provenance.",
+    "Accept metric/event/state; produce report; decide command with safety.",
+    "ARM → execute command within TTL; DISARM when done.",
+    "Summarize state/anomaly/action/next-observation in human language on request."
+  ]
+}
+</pre>
+  </main>
+</body>
+</html>
