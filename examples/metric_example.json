@@ -1,0 +1,1 @@
+{ "aips":"0.1","type":"metric","ts":"2025-10-31T17:10:00Z","stream":"brew.kettle","subject":"sensor:kitchen-01","data":{"temperature":20.9,"unit_temperature":"°C"} }
