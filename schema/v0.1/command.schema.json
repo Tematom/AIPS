@@ -1,0 +1,18 @@
+{
+  "$id": "https://aips.tematom.com/schema/v0.1/command.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["aips","type","ts","data","target","ttl"],
+  "properties": {
+    "aips": { "const": "0.1" },
+    "type": { "const": "command" },
+    "id": { "type": "string" },
+    "ts": { "type": "string", "format": "date-time" },
+    "stream": { "type": "string" },
+    "target": { "type": "string" },
+    "ttl": { "type": "string" },
+    "data": { "type": "object", "additionalProperties": true },
+    "provenance": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": true
+}
